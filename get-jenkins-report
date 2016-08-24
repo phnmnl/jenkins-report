@@ -44,6 +44,27 @@ class PhenomenalJenkinsReport {
 		return count($this->get_tool_names());
 	}
 
+	////////////////////////////////
+	// IS TOOL LAST BUILD SUCCESS //
+	////////////////////////////////
+	
+	public function is_tool_last_build_success($tool) {
+
+		// Get number of builds
+		$last_build_number_node = $this->xml->xpath("/hudson/job/name[text()='$tool']/../lastBuild/number");
+		if (count($last_build_number_node) == 0)
+			return NULL;
+		$last_build_number = intval($last_build_number_node[0]->__toString());
+		
+		// Get last successful build number
+		$last_successful_build_number_node = $this->xml->xpath("/hudson/job/name[text()='$tool']/../lastSuccessfulBuild/number");
+		if (count($last_successful_build_number_node) == 0)
+			return false;
+		$last_successful_build_number = intval($last_successful_build_number_node[0]->__toString());
+		
+		return $last_successful_build_number == $last_build_number;
+	}
+	
 	//////////////
 	// TO ARRAY //
 	//////////////
@@ -54,7 +75,7 @@ class PhenomenalJenkinsReport {
 		
 		$a['tools'] = array();
 		foreach($this->get_tool_names() as $tool)
-			array_push($a['tools'], array( 'name' => $tool));
+			array_push($a['tools'], array('name' => $tool, 'last_build_status' => $this->is_tool_last_build_success($tool) ? 'success' : 'failure'));
 		
 		return $a;
 	}
