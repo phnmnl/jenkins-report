@@ -1,0 +1,84 @@
+#!/usr/bin/php
+<?php
+
+// Enable all warning and error reports
+error_reporting(E_ALL|E_STRICT);
+
+/////////////////////////////////////
+// PHENOMENAL JENKINS REPORT CLASS //
+/////////////////////////////////////
+
+class PhenomenalJenkinsReport {
+	
+	private $xml = NULL;
+	
+	/////////////////
+	// CONSTRUCTOR //
+	/////////////////
+	
+	public function __construct() {
+		$xmlstr = file_get_contents("http://phenomenal-h2020.eu/jenkins/api/xml?depth=1");
+		$this->xml = new SimpleXMLElement($xmlstr);
+	}
+
+	////////////////////
+	// GET TOOL NAMES //
+	////////////////////
+	
+	public function get_tool_names() {
+		$jobnames = $this->xml->xpath('/hudson/job/name');
+		$tools = array();
+		while(list( , $job) = each($jobnames)) {
+			if (preg_match('/^docker-.*$/', $job)) {
+	    		array_push($tools, $job->__toString());
+			}
+		}
+		return $tools;
+	}
+
+	/////////////////////////
+	// GET NUMBER OF TOOLS //
+	/////////////////////////
+
+	public function get_nb_tools() {
+		return count($this->get_tool_names());
+	}
+
+	//////////////
+	// TO ARRAY //
+	//////////////
+	
+	public function to_array() {
+
+		$a = array();
+		
+		$a['tools'] = array();
+		foreach($this->get_tool_names() as $tool)
+			array_push($a['tools'], array( 'name' => $tool));
+		
+		return $a;
+	}
+	
+	/////////////
+	// TO JSON //
+	/////////////
+	
+	public function to_json() {
+		return json_encode($this->to_array());
+	}
+	
+	/////////////////////
+	// GET JSON REPORT //
+	/////////////////////
+	
+	public static function get_json_report() {
+		return (new PhenomenalJenkinsReport())->to_json();
+	}
+}
+
+//////////
+// MAIN //
+//////////
+
+print(PhenomenalJenkinsReport::get_json_report());
+?>
