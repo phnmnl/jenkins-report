@@ -1,3 +1,4 @@
 *.xml
 .swp
 .*.swp
+/.idea/
