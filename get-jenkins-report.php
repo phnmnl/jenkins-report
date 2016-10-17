@@ -1,4 +1,3 @@
-#!/usr/bin/php
 <?php
 
 // Enable all warning and error reports
