@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.3/css/bootstrap.min.css" integrity="sha384-MIwDKRSSImVFAZCVLtU0LMDdON6KVCrZHyVQQj6e8wIEJkW4tvwqXrbMIya1vriY" crossorigin="anonymous">
+    <script   src="https://code.jquery.com/jquery-3.1.0.min.js"   integrity="sha256-cCueBR6CsyA4/9szpPfrX3s49M9vUU5BgtiJj06wt/s="   crossorigin="anonymous"></script>
+</head>
+<body>
+
+</body>
+</html>
+
+<script>
+
+    $( document ).ready(function() {
+
+        $.ajax({
+            type: 'GET',
+            url: 'get-jenkins-report.php',
+            success: function (data) {
+                var json = jQuery.parseJSON(data);
+
+                $('body').append(
+                        '<div class="container" style="margin-bottom: 10px">' +
+                        ' Number of Tools: ' + '<div class="d-inline bg-info" style="padding: 5px">' + json['nb_tools'] + '</div>' +
+                        ' Number of Tools Built Successfully: ' + '<div class="d-inline bg-info" style="padding: 5px">' + json['nb_tools_built_successfully'] + '</div><br>' +
+                        ' Percentage of Tools Built Successfully:  ' + '<div class="d-inline bg-info" style="padding: 5px">' + json['percentage_of_tools_built_successfully'] + '%</div>' +
+                        '</div>'
+                );
+
+                $.each(json['tools'], function(index, element) {
+
+                    var status;
+                    var buttonColor;
+                    if(element['last_build_status'] == "success"){
+                        status = "Success";
+                        buttonColor = "bg-success";
+                    } else {
+                        status = "Failed";
+                        buttonColor = "bg-danger";
+                    }
+
+                    $('body').append('' +
+                            '<div class="container">' +
+                                '<div class="row">' +
+                                    '<div class="col-md-6"> ' +
+                                        '<span class="d-block bg-primary" style="padding: 10px; margin-bottom: 5px;">' + element['name'] + '</span>' +
+                                    '</div>' +
+                                    '<div class="col-md-2">' +
+                                        '<span class="d-block '+ buttonColor + '" style="padding: 10px; margin-bottom: 5px; text-align: center">' + status +'</span>' +
+                                    '</div>' +
+                                '</div>' +
+                            '</div>')
+                });
+            }
+        });
+    });
+
+</script>
+
