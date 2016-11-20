@@ -29,7 +29,7 @@ class PhenomenalJenkinsReport {
 		$jobnames = $this->xml->xpath('/hudson/job/name');
 		$tools = array();
 		while(list( , $job) = each($jobnames)) {
-			if (preg_match('/^docker-.*$/', $job)) {
+			if (preg_match('/^container-.*$/', $job)) {
 	    		array_push($tools, $job->__toString());
 			}
 		}
